@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Treasure Quest</title>
+	<!-- Internal CSS style sheet -->
+	<style>
+		/* Center-aligns the text */
+		h1 {
+			text-align: center;
+		}
+		/* Centers the image */
+		img {
+			display: block;
+			margin: auto;
+		}
+		#message {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<h1>Find the Hidden Treasure!</h1>
+	<!-- Insert an image of a treasure map of size 400 pixels by 400 pixels-->
+	<img width = 400 height 400 src = "https://s-media-cache-ak0.pinimg.com/736x/4e/93/dc/4e93dc2f97b1c9ea2047b5b99dacb1a1.jpg">
+	<!-- Create an area beneath the map that will contain the site's messages -->
+	<p id = "message"></p>
+	<!-- Allows the website to use the jQuery library -->
+	<script src = "https://code.jquery.com/jquery-3.1.1.js"></script>
+
+	<!-- Game code -->
+	<script>
+		// Get a random number for the treasure's location
+		function randomLocation() {
+			return Math.floor(Math.random() * 400);
+		}
+		/*
+		   Calculate the distance between where the user clicks and the treasure's location
+		   - Use the Pythagorean Theorem (x^2 + y^2 = c^2)
+		   	- c = sqrt(x^2 + y^2) 
+		*/
+		function getDistance(event, targetX, targetY) {
+            /* Debug statement to test if the program is working correctly
+            alert("Event coordinates: " + event.offsetX + ", " + event.offsetY + "\nTarget coordinates: " + targetX + ", " + targetY);
+			*/
+            // Return the offset coordinate of x
+			var x = (event.offsetX - targetX);
+			// Return the offset coordinate of y
+			var y = (event.offsetY - targetY);
+			// Calculate the distance between x and y
+			return Math.sqrt((Math.pow(x, 2)) - (Math.pow(y, 2)));
+		}
+		// Get the distance message
+		function getDistanceMessage(distance) {
+			// Tell the player how many clicks it took for them to find the location
+			if (distance <= 12) {
+				return "You found it!";
+			}
+			else if (distance <= 24) {
+				return "You're getting really hot!";
+			}
+			else if (distance <= 48) {
+				return "You're getting hot!";
+			}
+			else if (distance <= 96) {
+				return "You're neither warm nor cold!";
+			}
+			else if (distance <= 192) {
+				return "You're getting cold!";
+			}
+			else if (distance <= 384) {
+				return "You're getting really cold!";
+			}
+			else {
+				return "You're freezing!";
+			}
+		}
+		// Set up the initial variables
+        var clicks = 0;
+        var gotLocation = false;
+        var locationX = randomLocation();
+        var locationY = randomLocation();
+
+		// Game loop
+		// Add a click handler for the map
+		$("img").click(function(event) {
+			clicks++;
+            // Check to see if a location has already been chosen
+			if (gotLocation == false) {
+                // Set up the initial variables
+                clicks = 0;
+                // Get 2 random coordinates for a random location
+                locationX = randomLocation();
+                locationY = randomLocation();
+                // The game has begun
+                gotLocation = true;
+			}
+            // Get the difference between the selected location and the treasure's location
+            var distance = getDistance(event, locationX, locationY);
+            // Get the message
+			var distanceMessage = getDistanceMessage(distance);
+			// Update the "message" element with the new message
+			$("#message").text(distanceMessage);
+			// If the player found the treasure, congratulate them and tell the player how many clicks it took for them tot find the location
+			if (distance <= 12) {
+				alert("Congratulations!\nYou win!\nIt took you " + clicks + " tries!");
+                // Ask the player if they want to play another game
+                again = confirm("Would you like to play another game?\nSelect \"again\" for yes or \"Cancel\" for no.");
+                // If the player wants to play another game, start a new game
+                if (again == true) {
+                    gotLocation = false;
+                }
+                // Otherwise, don't do anything
+                else {
+                    alert("Game over!");
+                    // Remove the click event handler
+                    $("img").off(event);
+                }
+			}
+		});
+	</script>
+</body>
+</html>
